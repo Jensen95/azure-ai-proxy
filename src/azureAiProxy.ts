@@ -7,6 +7,9 @@ const AZURE_API_VERSION = process.env.AZURE_API_VERSION ?? "2025-01-01-preview";
 const AZURE_API_KEY = process.env.AZURE_API_KEY;
 const PROXY_PORT = parseInt(process.env.PORT ?? "8000", 10);
 
+let lastRequestSuccessful = false;
+let requestLog = [];
+
 // Transform incoming Zed-like payload into an Azure Chat Completions payload
 function transformRequest(zedPayload: any): any {
   const systemMessage = {
@@ -147,15 +150,16 @@ async function handlePost(req: IncomingMessage, res: ServerResponse) {
   req.on("end", async () => {
     const raw = Buffer.concat(chunks).toString("utf-8");
 
-    let zedPayload: any;
+    let zedPayload: {
+      model: string;
+      messages?: any[];
+      stream?: boolean;
+      temperature?: number;
+      max_completions_tokens?: number;
+      tools?: any[];
+    };
     try {
       zedPayload = JSON.parse(raw);
-      console.log({
-        method: req.method,
-        url: req.url,
-        headers: req.headers,
-        body: zedPayload,
-      });
     } catch {
       res.writeHead(400, { "Content-Type": "text/plain" });
       res.end("Invalid JSON from client");
@@ -171,14 +175,37 @@ async function handlePost(req: IncomingMessage, res: ServerResponse) {
     const controller = new AbortController();
     // If the client disconnects, abort the upstream request
     res.on("close", () => controller.abort());
-    const accessToken = req.headers["authorization"]?.toString().split(" ")[1];
+    const requestToken = req.headers["authorization"]?.toString().split(" ")[1];
+    const accessToken = (
+      requestToken?.length! > 0 ? requestToken! : (AZURE_API_KEY ?? "")
+    ).trim();
+    const requestSummary = {
+      timestamp: new Date().toISOString(),
+      url: req.url,
+      userAgent: req.headers["user-agent"] || "unknown",
+      authorization:
+        accessToken.length > 0
+          ? accessToken.length <= 8
+            ? "Yes, but probably too short, length is smaller than 8"
+            : `${accessToken.slice(0, 4)}...${accessToken.slice(-4)}`
+          : "no",
+      model: zedPayload.model,
+      messageCount: Array.isArray(zedPayload.messages)
+        ? zedPayload.messages.length
+        : 0,
+      tools: Array.isArray(zedPayload.tools)
+        ? JSON.stringify(zedPayload.tools)
+        : "none",
+    };
+    requestLog.push(requestSummary);
+    console.info(requestSummary);
     try {
       const azureResp = await fetch(azureUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Accept: "text/event-stream",
-          "api-key": accessToken ?? AZURE_API_KEY ?? "",
+          "api-key": accessToken ?? "",
           "user-agent": req.headers["user-agent"] || "azure-ai-proxy",
         },
         body: JSON.stringify(azurePayload),
@@ -202,8 +229,10 @@ async function handlePost(req: IncomingMessage, res: ServerResponse) {
 
       // Stream SSE to client with filtering
       await streamAzureToClient(azureResp, res);
+      lastRequestSuccessful = true;
     } catch (e: any) {
       const msg = `Error communicating with Azure OpenAI: ${e?.message ?? e}`;
+      lastRequestSuccessful = false;
       console.error(msg);
 
       if (!res.headersSent) {
@@ -273,6 +302,7 @@ const server = http.createServer((req, res) => {
     <li>Azure endpoint: <code>${AZURE_API_ENDPOINT}</code></li>
     <li>API key present: <strong>${hasKey ? "yes" : "no"}</strong></li>
     <li>Connectivity check (POST malformed request): <strong>${statusText || "no response"}</strong></li>
+    <li>Last request successful: <strong>${lastRequestSuccessful ? "yes" : "no"}</strong></li>
   </ul>
   <p>Health endpoint: <a href="/health">/health</a></p>
 </body>
