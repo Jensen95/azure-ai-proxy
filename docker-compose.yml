@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   azure-ai-proxy:
     container_name: azure-ai-proxy
@@ -20,6 +18,18 @@ services:
     # Map host 8000 to container 8000 (adjust host port if needed)
     ports:
       - "8000:8000"
+
+    develop:
+      watch:
+        # Rebuild on source or config changes, ignore heavy/noisy paths
+        - path: .
+          action: rebuild
+          ignore:
+            - node_modules/
+            - dist/
+            - .git/
+            - Dockerfile
+            - docker-compose.yml
 
     # Use built-in GET /health endpoint for healthcheck
     healthcheck:
