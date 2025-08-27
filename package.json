@@ -5,7 +5,8 @@
   "module": "true",
   "main": "dist/azureAiProxy.js",
   "scripts": {
-    "start": "tsc && node dist/azureAiProxy.js"
+    "start": "tsc && node dist/azureAiProxy.js",
+    "build": "tsc"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",
