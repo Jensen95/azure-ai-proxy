@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  azure-ai-proxy:
+    container_name: azure-ai-proxy
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: azure-ai-proxy:local
+
+    # Load environment variables for the container from .env (AZURE_* and PORT, etc.)
+    env_file:
+      - .env
+
+    # Provide default port if not set in .env
+
+    environment:
+      PORT: ${PORT:-8000}
+
+    # Map host 8000 to container 8000 (adjust host port if needed)
+    ports:
+      - "8000:8000"
+
+    # Use built-in GET /health endpoint for healthcheck
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -q -O - -T 2 http://127.0.0.1:$${PORT:-8000}/health >/dev/null 2>&1 || exit 1",
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+    restart: unless-stopped

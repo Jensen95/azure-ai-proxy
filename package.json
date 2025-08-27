@@ -1,0 +1,16 @@
+{
+  "name": "azure-ai-proxy",
+  "version": "0.1.0",
+  "description": "Simple proxy for an OpenAI compatible api",
+  "module": "true",
+  "main": "dist/azureAiProxy.js",
+  "scripts": {
+    "start": "tsc && node dist/azureAiProxy.js"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "typescript": "^5.9.2"
+  },
+  "author": "Morten Jensen",
+  "license": "ISC"
+}

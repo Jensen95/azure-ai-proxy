@@ -1,0 +1,73 @@
+# Project-wide .gitignore for Node + TypeScript (and Go artifacts)
+
+# Node dependencies
+node_modules/
+
+# Logs and diagnostics
+logs/
+*.log
+*.log.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment files (keep secrets out of git)
+.env
+.env.*
+!.env.example
+
+# TypeScript
+*.tsbuildinfo
+
+# Build outputs
+# Note: If you plan to commit built JS (e.g., for Docker prebuilt stage),
+#       remove 'dist/' from this ignore list.
+dist/
+build/
+out/
+
+# Coverage and test artifacts
+coverage/
+.nyc_output/
+test-results/
+junit.xml
+
+# Caches and temporary files
+.cache/
+.tmp/
+tmp/
+temp/
+
+# Tooling caches
+.eslintcache
+.stylelintcache
+
+# Editors and IDEs
+.vscode/
+.idea/
+*.iml
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Docker (local override files)
+docker-compose.override.yml
+
+# Go (Golang) artifacts
+# Binaries and outputs
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Common Go build directories
+bin/
+debug/
+release/
+# If you use vendoring and want to commit vendor/, comment the next line out
+# vendor/

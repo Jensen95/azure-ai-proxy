@@ -1,0 +1,64 @@
+# Keep the image light by excluding files not needed at build/runtime
+
+# Node.js dependencies and caches (re-installed inside image)
+node_modules
+.npm
+.npmrc
+npm-debug.log*
+pnpm-debug.log*
+.yarn
+.yarnrc*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files (do not bake secrets into images)
+.env
+.env.*
+*.local
+
+# VCS
+.git
+.git/**
+.gitignore
+.gitattributes
+.github
+
+# Editors/IDE
+.vscode
+.idea
+*.iml
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs
+*.log
+
+# Test and coverage outputs
+coverage
+.nyc_output
+__tests__
+test
+tests
+
+# Caches and temporary files
+.cache
+.tmp
+tmp
+temp
+
+# Framework/build artifacts (not used here, but safe to exclude)
+.next
+.turbo
+
+# Other languages/artifacts not needed in the Node image
+*.go
+*.exe
+*.out
+
+# Docker files need not be in the build context
+Dockerfile
