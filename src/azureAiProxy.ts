@@ -193,9 +193,7 @@ async function handlePost(req: IncomingMessage, res: ServerResponse) {
       messageCount: Array.isArray(zedPayload.messages)
         ? zedPayload.messages.length
         : 0,
-      tools: Array.isArray(zedPayload.tools)
-        ? JSON.stringify(zedPayload.tools)
-        : "none",
+      toolsCount: Array.isArray(zedPayload.tools) ? zedPayload.tools.length : 0,
     };
     requestLog.push(requestSummary);
     console.info(requestSummary);
