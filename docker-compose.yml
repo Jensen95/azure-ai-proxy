@@ -22,14 +22,14 @@ services:
     develop:
       watch:
         # Rebuild on source or config changes, ignore heavy/noisy paths
-        - path: .
+        - path: ./src
           action: rebuild
-          ignore:
-            - node_modules/
-            - dist/
-            - .git/
-            - Dockerfile
-            - docker-compose.yml
+        - path: ./package.json
+          action: rebuild
+        - path: ./package-lock.json
+          action: rebuild
+        - path: ./tsconfig.json
+          action: rebuild
 
     # Use built-in GET /health endpoint for healthcheck
     healthcheck:
