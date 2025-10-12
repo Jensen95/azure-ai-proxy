@@ -9,7 +9,7 @@
     "build": "tsc"
   },
   "devDependencies": {
-    "@types/node": "^24.6.2",
+    "@types/node": "^24.7.2",
     "typescript": "^5.9.3"
   },
   "author": "Morten Jensen",
