@@ -1,4 +1,4 @@
-FROM node:24-alpine AS builder
+FROM node:25-alpine AS builder
 WORKDIR /app
 
 # Install deps (including dev) to enable TypeScript compilation
@@ -15,7 +15,7 @@ RUN npx tsc
 ############################
 # Runtime (from builder): use compiled dist from the builder stage
 ############################
-FROM node:24-alpine AS runtime
+FROM node:25-alpine AS runtime
 WORKDIR /app
 
 # Install only production dependencies for lean runtime
